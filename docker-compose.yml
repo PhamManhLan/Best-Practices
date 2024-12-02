@@ -50,33 +50,70 @@
 
 # volumes:
 #   postgres_data:
+# services:
+#   postgres_db:
+#     image: postgres:13
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: manhlan
+#       POSTGRES_DB: secondCRUD
+#     ports:
+#       - "5433:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - app_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres"]
+#       interval: 10s
+#       retries: 5    
+
+#   fastapi_app:
+#     build: .
+#     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - postgres_db
+#     networks:
+#       - app_network
+
+# volumes:
+#   postgres_data:
+
+# networks:
+#   app_network:
+#     driver: bridge
+
 services:
-  postgres_db:
+  app:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:manhlan@db:5432/secondCRUD
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+  db:
     image: postgres:13
+    container_name: postgres_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: manhlan
       POSTGRES_DB: secondCRUD
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "5432:5432"
     networks:
       - app_network
-
-  fastapi_app:
-    build: .
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres_db
-    networks:
-      - app_network
-
-volumes:
-  postgres_data:
 
 networks:
   app_network:
     driver: bridge
+    # DATABASE_URL = "postgresql+asyncpg://postgres:manhlan@127.0.0.1:5432/secondCRUD"
+# DATABASE_URL = "postgresql+asyncpg://postgres:manhlan@postgres_db:5433/secondCRUD"
