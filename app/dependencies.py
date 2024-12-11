@@ -13,7 +13,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
 
-async def init_db():
-    from app.models import Base
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# async def init_db():
+#     from app.models import Base
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)

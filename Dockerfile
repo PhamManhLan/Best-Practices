@@ -51,7 +51,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y gcc libpq-dev
 
 # Cài đặt các phụ thuộc Python từ requirements.txt
-COPY requirements.txt /app/
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy tất cả các file trong project vào container
