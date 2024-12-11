@@ -8,5 +8,4 @@ pydantic
 alembic
 python-multipart
 psycopg2
-python-dotenv
 passlib[bcrypt]
