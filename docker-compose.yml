@@ -22,37 +22,39 @@
 # volumes:
 #   postgres_data:
 
+services:
+  postgres_db:
+    image: postgres:13
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: manhlan
+      POSTGRES_DB: secondCRUD
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  fastapi_app:
+    build: .
+    command: uvicorn app.main:app --host 127.0.0.1 --port 8000 --timeout-keep-alive 500
+    container_name: fastapi_app
+    restart: always
+    depends_on:
+      - postgres_db
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:manhlan@127.0.0.1:5433/secondCRUD
+networks:
+  app_network:
+    driver: bridge
+volumes:
+  postgres_data:
 # services:
 #   postgres_db:
-#     image: postgres:13
-#     container_name: postgres_db
-#     restart: always
-#     environment:
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: manhlan
-#       POSTGRES_DB: secondCRUD
-#     ports:
-#       - "5432:5432"
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-
-#   fastapi_app:
-#     build:
-#       context: .
-#     container_name: fastapi_app
-#     restart: always
-#     depends_on:
-#       - postgres_db
-#     ports:
-#       - "8000:8000"
-#     environment:
-#       - DATABASE_URL=postgresql+asyncpg://postgres:manhlan@127.0.0.1/secondCRUD
-
-# volumes:
-#   postgres_data:
-# services:
-#   postgres_db:
-#     image: postgres:13
+#     image: postgres:15
 #     environment:
 #       POSTGRES_USER: postgres
 #       POSTGRES_PASSWORD: manhlan
@@ -85,39 +87,39 @@
 #   app_network:
 #     driver: bridge
 
-services:
-  app:
-    build: .
-    container_name: fastapi_app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    ports:
-      - 8000:8000
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:manhlan@db/secondCRUD
-    volumes:
-      - .:/app
-    networks:
-      - app_network
+# services:
+#   app:
+#     build: .
+#     container_name: fastapi_app
+#     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+#     ports:
+#       - 8000:8000
+#     depends_on:
+#       - db
+#     environment:
+#       - DATABASE_URL=postgresql+asyncpg://postgres:manhlan@db/secondCRUD
+#     volumes:
+#       - .:/app
+#     networks:
+#       - app_network
 
-  db:
-    image: postgres:15
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: manhlan
-      POSTGRES_DB: secondCRUD
-    # ports:
-    #   - "5434:5432"
-    networks:
-      - app_network
-    expose:
-      - 5432
-volumes:
-  postgres_data:
-networks:
-  app_network:
-    driver: bridge
+#   db:
+#     image: postgres:13
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: manhlan
+#       POSTGRES_DB: secondCRUD
+#     ports:
+#       - "5432:5432"
+#     networks:
+#       - app_network
+#     # expose:
+#     #   - 5432
+# volumes:
+#   postgres_data:
+# networks:
+#   app_network:
+#     driver: bridge
     # DATABASE_URL = "postgresql+asyncpg://postgres:manhlan@127.0.0.1:5432/secondCRUD"
 # DATABASE_URL = "postgresql+asyncpg://postgres:manhlan@postgres_db:5433/secondCRUD"
